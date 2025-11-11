@@ -1,0 +1,210 @@
+﻿
+
+@* <h2>Register for Exam</h2>
+<form asp-action="Register" method="post">
+    <label>Full Name</label>
+    <input asp-for="FullName" />
+    <label>Email</label>
+    <input asp-for="Email" />
+    <label>Institution</label>
+    <input asp-for="Institution" />
+    <label>Level</label>
+    <input asp-for="Level" />
+    <label>Course of Study</label>
+    <input asp-for="CourseOfStudy" />
+    <label>Phone Number</label>
+    <input asp-for="PhoneNumber" />
+    <button type="submit">Register</button>
+</form> *@
+
+@* @model AutomatedExamSystem.Models.DTOs.CandidateDto
+@{
+    ViewData["Title"] = "Candidate Registration";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-lg border-0 mx-auto" style="max-width: 700px;">
+        <div class="card-body p-5">
+            <h2 class="text-center mb-4 fw-bold text-primary">
+                <i class="bi bi-person-plus"></i> Candidate Registration
+            </h2>
+
+            <form asp-action="Register" method="post" novalidate>
+                @Html.AntiForgeryToken()
+
+                <div class="mb-3">
+                    <label asp-for="FullName" class="form-label fw-semibold"></label>
+                    <input asp-for="FullName" class="form-control" placeholder="Enter your full name" />
+                    <span asp-validation-for="FullName" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label fw-semibold"></label>
+                    <input asp-for="Email" class="form-control" placeholder="Enter your email" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="PhoneNumber" class="form-label fw-semibold"></label>
+                    <input asp-for="PhoneNumber" class="form-control" placeholder="Enter your phone number" />
+                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Institution" class="form-label fw-semibold"></label>
+                    <input asp-for="Institution" class="form-control" placeholder="Your institution name" />
+                    <span asp-validation-for="Institution" class="text-danger"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="CourseOfStudy" class="form-label fw-semibold"></label>
+                        <input asp-for="CourseOfStudy" class="form-control" placeholder="Course of Study" />
+                        <span asp-validation-for="CourseOfStudy" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Level" class="form-label fw-semibold"></label>
+                        <input asp-for="Level" class="form-control" placeholder="Level (e.g., 400L)" />
+                        <span asp-validation-for="Level" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 mt-3 py-2 fw-semibold">
+                    Register Now
+                </button>
+
+                <div class="text-center mt-3">
+                    <p class="small">Already registered? 
+                        <a href="@Url.Action("Login", "Account")" class="fw-bold text-decoration-none">Login</a>
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+</div> *@
+
+
+
+
+
+
+
+
+                @model AutomatedExamSystem.Models.DTOs.CandidateDto
+@{
+    ViewData["Title"] = "Candidate Registration";
+}
+
+<style>
+    body {
+        background: linear-gradient(to right, #f8f9fa, #e3f2fd);
+    }
+
+    .register-card {
+        border-radius: 20px;
+        overflow: hidden;
+    }
+
+    .register-header {
+        background: #0d6efd;
+        color: #fff;
+        padding: 2rem;
+        text-align: center;
+    }
+
+        .register-header i {
+            font-size: 2rem;
+        }
+
+    .form-control {
+        border-radius: 10px;
+        padding: 0.75rem;
+    }
+
+    .btn-register {
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+        .btn-register:hover {
+            background-color: #0b5ed7;
+            transform: translateY(-2px);
+        }
+
+    .form-label {
+        color: #0d6efd;
+    }
+</style>
+
+<div class="container mt-5 mb-5">
+    <div class="card shadow-lg border-0 mx-auto register-card" style="max-width: 700px;">
+        <div class="register-header">
+            <i class="bi bi-person-plus-fill"></i>
+            <h2 class="fw-bold mt-2 mb-0">Candidate Registration</h2>
+            <p class="mb-0">Perfetti Van Melle Undergraduate Scholarship Assessment</p>
+        </div>
+
+        <div class="card-body p-5 bg-white">
+            <form asp-action="Register" method="post" novalidate>
+                @Html.AntiForgeryToken()
+
+                <div class="mb-3">
+                    <label asp-for="FullName" class="form-label fw-semibold"></label>
+                    <input asp-for="FullName" class="form-control" placeholder="Enter your full name" />
+                    <span asp-validation-for="FullName" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label fw-semibold"></label>
+                    <input asp-for="Email" class="form-control" placeholder="Enter your email address" />
+                    <span asp-validation-for="Email" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="PhoneNumber" class="form-label fw-semibold"></label>
+                    <input asp-for="PhoneNumber" class="form-control" placeholder="Enter your phone number" />
+                    <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Institution" class="form-label fw-semibold"></label>
+                    <input asp-for="Institution" class="form-control" placeholder="Enter your institution name" />
+                    <span asp-validation-for="Institution" class="text-danger small"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="CourseOfStudy" class="form-label fw-semibold"></label>
+                        <input asp-for="CourseOfStudy" class="form-control" placeholder="Course of Study" />
+                        <span asp-validation-for="CourseOfStudy" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Level" class="form-label fw-semibold"></label>
+                        <select asp-for="Level" class="form-select">
+                            <option value="">-- Select Level --</option>
+                            <option>100L</option>
+                            <option>200L</option>
+                            @* <option>300L</option>
+                            <option>400L</option> *@
+                        </select>
+                        <span asp-validation-for="Level" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold btn-register mt-2">
+                    <i class="bi bi-check-circle me-2"></i> Register Now
+                </button>
+
+                <div class="text-center mt-3">
+                    <p class="small mb-0">
+                        Already registered?
+                        <a href="@Url.Action("Login", "Account")" class="fw-bold text-decoration-none text-primary">Login here</a>
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

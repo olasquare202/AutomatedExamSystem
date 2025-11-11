@@ -1,0 +1,130 @@
+﻿@* @{
+    ViewData["Title"] = "Admin Login";
+}
+<h2>Admin Login</h2>
+<form asp-action="Login" method="post">
+    @Html.AntiForgeryToken()
+    <div class="mb-3">
+        <label>Username</label>
+        <input name="username" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label>Password</label>
+        <input name="password" type="password" class="form-control" />
+    </div>
+    <button class="btn btn-primary">Login</button>
+</form> *@
+
+
+@{
+    ViewData["Title"] = "Admin Login";
+    Layout = "_Layout"; // or use null if you want a standalone login page
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #0d6efd 0%, #6f42c1 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .login-card {
+        background: #fff;
+        border-radius: 1rem;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        padding: 2rem 2.5rem;
+        width: 100%;
+        max-width: 400px;
+        animation: fadeIn 0.8s ease-in-out;
+    }
+
+    @@keyframes fadeIn {
+        from { opacity: 0; transform: translateY(15px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .login-header {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .login-header img {
+        width: 60px;
+        margin-bottom: 0.5rem;
+    }
+
+    .login-header h3 {
+        color: #333;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+
+    .login-header p {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    .form-control {
+        border-radius: 0.5rem;
+        padding: 0.75rem;
+    }
+
+    .btn-login {
+        background: #0d6efd;
+        border: none;
+        padding: 0.7rem;
+        border-radius: 0.5rem;
+        width: 100%;
+        color: #fff;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+
+    .btn-login:hover {
+        background: #0b5ed7;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 10px rgba(13, 110, 253, 0.3);
+    }
+
+    .text-muted a {
+        color: #6c757d;
+        text-decoration: none;
+    }
+
+    .text-muted a:hover {
+        text-decoration: underline;
+    }
+</style>
+
+<div class="login-card">
+    <div class="login-header">
+        <img src="~/images/admin-icon.png" alt="Admin Logo" />
+        <h3>Admin Portal</h3>
+        <p>Sign in to manage your exam system</p>
+    </div>
+
+    <form asp-action="Login" method="post">
+        @Html.AntiForgeryToken()
+
+        <div class="mb-3">
+            <label for="Username" class="form-label fw-semibold">Username</label>
+            <input type="text" name="Username" class="form-control" placeholder="Enter your username" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="Password" class="form-label fw-semibold">Password</label>
+            <input type="password" name="Password" class="form-control" placeholder="Enter your password" required />
+        </div>
+
+        <button type="submit" class="btn btn-login mt-2">
+            <i class="bi bi-box-arrow-in-right"></i> Log In
+        </button>
+
+        <p class="text-center text-muted mt-3 mb-0">
+            <a href="@Url.Action("Index", "Home")"><i class="bi bi-house"></i> Back to Home</a>
+        </p>
+    </form>
+</div>

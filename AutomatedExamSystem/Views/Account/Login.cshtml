@@ -1,0 +1,48 @@
+﻿@model AutomatedExamSystem.Models.Candidate
+@{
+    ViewData["Title"] = "Candidate Login";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-lg border-0 mx-auto" style="max-width: 500px;">
+        <div class="card-body p-5 text-center">
+            <h2 class="fw-bold text-primary mb-4"><i class="bi bi-box-arrow-in-right"></i> Candidate Login</h2>
+
+            <form asp-action="Login" method="post" novalidate>
+                @Html.AntiForgeryToken()
+
+                <div class="mb-3 text-start">
+                    <label for="candidateCode" class="form-label fw-semibold">Candidate ID</label>
+                    <input name="candidateCode" id="candidateCode" class="form-control" placeholder="Enter your Candidate ID" required />
+                </div>
+
+                <div class="mb-3 text-start">
+                    <label for="email" class="form-label fw-semibold">Email</label>
+                    <input name="email" id="email" class="form-control" placeholder="Enter your email" required />
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold">Login</button>
+
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger mt-3 text-start">
+                        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                        {
+                            <div>@error.ErrorMessage</div>
+                        }
+                    </div>
+                }
+
+                <div class="text-center mt-3">
+                    <p class="small">
+                        Not registered?
+                        <a href="@Url.Action("Register", "Account")" class="fw-bold text-decoration-none">Register here</a>
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@* <script type="text/javascript">swal("Registration was successful")</script>*@

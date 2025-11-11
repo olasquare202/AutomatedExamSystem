@@ -1,0 +1,43 @@
+﻿@model AutomatedExamSystem.Models.Candidate
+@{
+    ViewData["Title"] = "Exam Already Attempted";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-lg border-warning mx-auto" style="max-width: 600px;">
+        <div class="card-body text-center">
+            <i class="bi bi-exclamation-triangle-fill text-warning display-4 mb-3"></i>
+            <h3 class="text-danger mb-3">Exam Already Submitted</h3>
+            <p class="lead">
+                Hello <strong>@Model.FullName</strong>,<br />
+                Our records show that you have already taken the exam.
+                Multiple attempts are not allowed.
+            </p>
+            <div class="alert alert-info mt-4">
+                You’ll be redirected to the login page shortly...
+            </div>
+
+            <div class="mt-4">
+                <!-- Redirect directly to login page -->
+                <a href="@Url.Action("Login", "Account")" class="btn btn-outline-danger me-2">
+                    <i class="bi bi-box-arrow-right"></i> Logout & Return to Login
+                </a>
+
+                <a href="@Url.Action("Index", "Home")" class="btn btn-outline-primary">
+                    <i class="bi bi-house"></i> Home
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+ @section Scripts {
+    <script>
+        // Automatically redirect to login after 2 seconds
+        setTimeout(() => {
+            window.location.href = '@Url.Action("Login", "Account")';
+        }, 20000);
+    </script>
+}
+  

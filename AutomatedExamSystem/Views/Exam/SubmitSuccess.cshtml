@@ -1,0 +1,114 @@
+﻿@*  @model AutomatedExamSystem.Models.CandidateAttempt
+@{
+    ViewData["Title"] = "Exam Submitted";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-lg border-success mx-auto" style="max-width: 700px;">
+        <div class="card-body text-center">
+            <h2 class="text-success mb-3">
+                <i class="bi bi-check-circle-fill"></i> Exam Submitted Successfully!
+            </h2>
+
+            <p class="lead mb-4">
+                Thank you for completing your test. Your responses have been successfully submitted.
+            </p>
+
+            <div class="alert alert-success text-start mx-auto" style="max-width: 500px;">
+                <h5 class="fw-bold">Submission Details</h5>
+                <p><strong>Candidate ID:</strong> @Model.Candidate?.CandidateCode</p>
+                <p><strong>Submission Time (UTC):</strong> @Model.EndTimeUtc?.ToString("f")</p>
+                <p><strong>Score:</strong> @(Model.Score > 0 ? Model.Score + " / 100" : "Pending")</p>
+                <h4 class="mt-4">Section Breakdown</h4>
+                <p>@Model.SectionBreakdownJson</p>
+            </div>
+
+            <p class="mt-3">You may now log out or return to the home page.</p>
+
+            <div class="mt-4">
+                <a href="@Url.Action("Index", "Home")" class="btn btn-outline-primary me-2">
+                    <i class="bi bi-house"></i> Home
+                </a>
+
+                <!-- ✅ Secure logout via form -->
+                <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-box-arrow-right"></i> Logout
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+ *@
+
+
+
+
+
+
+
+
+                    @model AutomatedExamSystem.Models.CandidateAttempt
+@{
+    ViewData["Title"] = "Exam Submitted";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-lg border-success mx-auto" style="max-width: 750px;">
+        <div class="card-body text-center">
+            <i class="bi bi-check-circle-fill text-success display-4 mb-3"></i>
+            <h2 class="text-success mb-3">Exam Submitted Successfully!</h2>
+
+            <p class="lead mb-4">
+                Thank you for completing the <strong>Perfetti Van Melle Scholarship Assessment</strong>,
+                powered by <strong>Fort Knox Outsourcing</strong>.
+            </p>
+
+            <p class="mb-3">
+                Your responses have been successfully submitted. Results and next steps will be
+                communicated via email after the evaluation process.
+            </p>
+
+            <p class="mb-4">
+                We appreciate your time, focus, and effort — and wish you the very best in your
+                journey toward excellence.
+            </p>
+
+            <h5 class="fw-bold text-success mb-4">
+                Prepare. Perform. Progress.
+            </h5>
+
+            @* <div class="alert alert-success text-start mx-auto" style="max-width: 550px;">
+                <h5 class="fw-bold mb-2">Submission Details</h5>
+                <p><strong>Candidate ID:</strong> @Model.Candidate?.CandidateCode</p>
+                <p><strong>Submission Time (UTC):</strong> @Model.EndTimeUtc?.ToString("f")</p>
+                <p><strong>Score:</strong> @(Model.Score > 0 ? Model.Score + " / 100" : "Pending Evaluation")</p>
+
+                <h6 class="mt-4 fw-bold">Section Breakdown</h6>
+                <p>@Model.SectionBreakdownJson</p>
+            </div> *@
+@* 
+            <div class="alert alert-secondary text-muted small mt-3 mx-auto" style="max-width: 550px;">
+                <em>Note: Cut-off mark will be incorporated upon client’s advice.</em>
+            </div> *@
+
+            <p class="mt-4">You may now log out or return to the home page.</p>
+
+            <div class="mt-3">
+                <a href="@Url.Action("Index", "Home")" class="btn btn-outline-primary me-2">
+                    <i class="bi bi-house"></i> Home
+                </a>
+
+                <!-- ✅ Secure logout form -->
+                <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-box-arrow-right"></i> Logout
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
