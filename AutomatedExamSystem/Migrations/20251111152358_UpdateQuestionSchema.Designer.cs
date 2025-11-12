@@ -4,6 +4,7 @@ using AutomatedExamSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AutomatedExamSystem.Migrations
 {
     [DbContext(typeof(ExamAppDbContext))]
-    partial class ExamAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251111152358_UpdateQuestionSchema")]
+    partial class UpdateQuestionSchema
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -127,9 +130,6 @@ namespace AutomatedExamSystem.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("StartTimeUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("SubmittedAtWAT")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("TotalQuestions")

@@ -99,22 +99,82 @@ namespace AutomatedExamSystem.Controllers
         //// ✅ NEW: Download Candidate Scores in PDF (Descending Order + Summary)
 
         [HttpGet]
-        public async Task<IActionResult> DownloadCandidateScores()
+        public async Task<IActionResult> DownloadCandidateScoresFiltered(string? level,
+            DateTime? fromDate,
+            DateTime? toDate,
+            string? format = "pdf" // ✅ Default is PDF, but CSV supported
+             )
         {
             if (!IsAdmin())
                 return RedirectToAction("Login");
 
-            // ✅ Get all candidates with their attempts (preloaded via Include)
+            // ✅ Get all candidates with their attempts
             var candidates = await _candidateRepo.GetAllWithAttemptsAsync();
 
-            // ✅ Handle cases where Attempts is null
+            // ✅ Apply Level filter if provided
+            if (!string.IsNullOrEmpty(level))
+                candidates = candidates.Where(c => c.Level == level).ToList();
+
+            // ✅ Apply Date filter (single day or range)
+            if (fromDate.HasValue && toDate.HasValue)
+            {
+                candidates = candidates
+                    .Where(c => c.RegistrationDate.Date >= fromDate.Value.Date &&
+                                c.RegistrationDate.Date <= toDate.Value.Date)
+                    .ToList();
+            }
+            else if (fromDate.HasValue)
+            {
+                candidates = candidates
+                    .Where(c => c.RegistrationDate.Date == fromDate.Value.Date)
+                    .ToList();
+            }
+
+            // ✅ Calculate average safely
             double averageScore = candidates
                 .Select(c => c.Attempts?.Score ?? 0)
                 .DefaultIfEmpty(0)
                 .Average();
 
+            // ✅ Build dynamic filter message
+            string filterMessage = "📋 Showing all results";
+            if (!string.IsNullOrEmpty(level) || fromDate.HasValue)
+            {
+                string datePart = fromDate.HasValue && toDate.HasValue
+                    ? $"📅 From {fromDate.Value:MMM d} to {toDate.Value:MMM d}"
+                    : fromDate.HasValue ? $"📅 On {fromDate.Value:MMM d}" : "";
+
+                string levelPart = !string.IsNullOrEmpty(level) ? $" | 🎓 Level: {level}" : "";
+
+                filterMessage = $"{datePart}{levelPart}";
+            }
+
             try
             {
+                // ✅ CSV FORMAT HANDLING
+                if (format?.ToLower() == "csv")
+                {
+                    var csvLines = new List<string>
+            {
+                "Candidate ID,Full Name,Email,Phone Number,Level,Score"
+            };
+
+                    foreach (var c in candidates)
+                    {
+                        var score = c.Attempts?.Score ?? 0;
+                        var line = $"{c.Id},\"{c.FullName} ({c.CandidateCode})\",{c.Email},{c.PhoneNumber},{c.Level},{score:F2}";
+                        csvLines.Add(line);
+                    }
+
+                    csvLines.Add($",,,Total Candidates: {candidates.Count()},Average Score: {averageScore:F2}");
+
+                    var csvContent = string.Join(Environment.NewLine, csvLines);
+                    var csvBytes = System.Text.Encoding.UTF8.GetBytes(csvContent);
+
+                    return File(csvBytes, "text/csv", "CandidateScores.csv");
+                }
+
+                // ✅ Otherwise, generate PDF
                 QuestPDF.Settings.License = LicenseType.Community;
 
                 var pdf = Document.Create(container =>
@@ -126,8 +186,13 @@ namespace AutomatedExamSystem.Controllers
                         // ===== HEADER =====
                         page.Header()
                             .AlignCenter()
-                            .Text("Automated Exam System - Candidate Scores")
-                            .SemiBold().FontSize(18).FontColor(Colors.Blue.Medium);
+                            .Column(column =>
+                            {
+                                column.Item().Text("Automated Exam System - Candidate Scores")
+                                    .SemiBold().FontSize(18).FontColor(Colors.Blue.Medium);
+                                column.Item().Text(filterMessage)
+                                    .FontSize(11).FontColor(Colors.Grey.Medium);
+                            });
 
                         // ===== TABLE =====
                         page.Content().Table(table =>
@@ -136,9 +201,8 @@ namespace AutomatedExamSystem.Controllers
                             {
                                 columns.ConstantColumn(100); // Candidate ID
                                 columns.RelativeColumn(2);   // Full Name
-                                columns.RelativeColumn(2);   // Candidate Level
-                                columns.RelativeColumn(2);   // Candidate Email
-                                columns.RelativeColumn(2);   // Candidate Phone Number
+                                columns.RelativeColumn(2);   // Email
+                                columns.RelativeColumn(2);   // Phone Number
                                 columns.ConstantColumn(80);  // Score
                             });
 
@@ -150,11 +214,9 @@ namespace AutomatedExamSystem.Controllers
                                 header.Cell().BorderBottom(1).BorderColor(Colors.Grey.Medium)
                                     .Text("Full Name").SemiBold();
                                 header.Cell().BorderBottom(1).BorderColor(Colors.Grey.Medium)
-                                    .Text("Candidate Level").SemiBold();
+                                    .Text("Email").SemiBold();
                                 header.Cell().BorderBottom(1).BorderColor(Colors.Grey.Medium)
-                                    .Text("Candidate Email").SemiBold();
-                                header.Cell().BorderBottom(1).BorderColor(Colors.Grey.Medium)
-                                    .Text("Candidate Phone Number").SemiBold();
+                                    .Text("Phone Number").SemiBold();
                                 header.Cell().BorderBottom(1).BorderColor(Colors.Grey.Medium)
                                     .Text("Score").SemiBold();
                             });
@@ -166,7 +228,6 @@ namespace AutomatedExamSystem.Controllers
 
                                 table.Cell().Text(c.Id.ToString());
                                 table.Cell().Text($"{c.FullName} ({c.CandidateCode})");
-                                table.Cell().Text($"{c.Level}") ;
                                 table.Cell().Text($"{c.Email}");
                                 table.Cell().Text($"{c.PhoneNumber}");
                                 table.Cell().Text(score.ToString("F2"));
@@ -181,10 +242,7 @@ namespace AutomatedExamSystem.Controllers
                         // ===== FOOTER =====
                         page.Footer()
                             .AlignCenter()
-                            .Text(x =>
-                            {
-                                x.Span("Generated on: " + DateTime.Now.ToString("f"));
-                            });
+                            .Text($"Generated on: {DateTime.Now:f}");
                     });
                 });
 
@@ -193,8 +251,7 @@ namespace AutomatedExamSystem.Controllers
             }
             catch (Exception ex)
             {
-                // Optional: log exception or return a view-friendly error message
-                return StatusCode(500, $"Error generating PDF: {ex.Message}");
+                return StatusCode(500, $"Error generating report: {ex.Message}");
             }
         }
 
@@ -206,126 +263,6 @@ namespace AutomatedExamSystem.Controllers
 
 
 
-//[HttpGet]
-//public async Task<IActionResult> DownloadCandidateScoresFiltered(string? level, DateTime? fromDate, DateTime? toDate)
-//{
-//    if (!IsAdmin())
-//        return RedirectToAction("Login");
-
-//    // ✅ Get all candidates with their attempts
-//    var candidates = await _candidateRepo.GetAllWithAttemptsAsync();
-
-//    // ✅ Apply Level filter if provided
-//    if (!string.IsNullOrEmpty(level))
-//        candidates = candidates.Where(c => c.Level == level).ToList();
-
-//    // ✅ Apply Date filter (single day or range)
-//    if (fromDate.HasValue && toDate.HasValue)
-//    {
-//        candidates = candidates
-//            .Where(c => c.RegistrationDate.Date >= fromDate.Value.Date &&
-//                        c.RegistrationDate.Date <= toDate.Value.Date)
-//            .ToList();
-//    }
-//    else if (fromDate.HasValue) // same-day or single date filter
-//    {
-//        candidates = candidates
-//            .Where(c => c.RegistrationDate.Date == fromDate.Value.Date)
-//            .ToList();
-//    }
-
-//    // ✅ Calculate average safely
-//    double averageScore = candidates
-//        .Select(c => c.Attempts?.Score ?? 0)
-//        .DefaultIfEmpty(0)
-//        .Average();
-
-//    // ✅ Build dynamic filter message
-//    string filterMessage = "📋 Showing all results";
-//    if (!string.IsNullOrEmpty(level) || fromDate.HasValue)
-//    {
-//        string datePart = fromDate.HasValue && toDate.HasValue
-//            ? $"📅 From {fromDate.Value:MMM d} to {toDate.Value:MMM d}"
-//            : fromDate.HasValue ? $"📅 On {fromDate.Value:MMM d}" : "";
-
-//        string levelPart = !string.IsNullOrEmpty(level) ? $" | 🎓 Level: {level}" : "";
-
-//        filterMessage = $"{datePart}{levelPart}";
-//    }
-
-//    try
-//    {
-//        QuestPDF.Settings.License = LicenseType.Community;
-
-//        var pdf = Document.Create(container =>
-//        {
-//            container.Page(page =>
-//            {
-//                page.Margin(40);
-
-//                // ===== HEADER =====
-//                page.Header()
-//                    .AlignCenter()
-//                    .Column(column =>
-//                    {
-//                        column.Item().Text("Automated Exam System - Candidate Scores")
-//                            .SemiBold().FontSize(18).FontColor(Colors.Blue.Medium);
-//                        column.Item().Text(filterMessage)
-//                            .FontSize(11).FontColor(Colors.Grey.Medium);
-//                    });
-
-//                // ===== TABLE =====
-//                page.Content().Table(table =>
-//                {
-//                    table.ColumnsDefinition(columns =>
-//                    {
-//                        columns.ConstantColumn(100); // Candidate ID
-//                        columns.RelativeColumn(2);   // Full Name
-//                        columns.ConstantColumn(80);  // Score
-//                    });
-
-//                    // ---- Table Header ----
-//                    table.Header(header =>
-//                    {
-//                        header.Cell().BorderBottom(1).BorderColor(Colors.Grey.Medium)
-//                            .Text("Candidate ID").SemiBold();
-//                        header.Cell().BorderBottom(1).BorderColor(Colors.Grey.Medium)
-//                            .Text("Full Name").SemiBold();
-//                        header.Cell().BorderBottom(1).BorderColor(Colors.Grey.Medium)
-//                            .Text("Score").SemiBold();
-//                    });
-
-//                    // ---- Table Rows ----
-//                    foreach (var c in candidates)
-//                    {
-//                        var score = c.Attempts?.Score ?? 0;
-
-//                        table.Cell().Text(c.Id.ToString());
-//                        table.Cell().Text($"{c.FullName} ({c.CandidateCode})");
-//                        table.Cell().Text(score.ToString("F2"));
-//                    }
-
-//                    // ---- Summary Row ----
-//                    table.Cell().ColumnSpan(3).PaddingTop(20)
-//                        .Text($"Total Candidates: {candidates.Count}     |     Average Score: {averageScore:F2}")
-//                        .SemiBold().FontColor(Colors.Blue.Medium);
-//                });
-
-//                // ===== FOOTER =====
-//                page.Footer()
-//                    .AlignCenter()
-//                    .Text($"Generated on: {DateTime.Now:f}");
-//            });
-//        });
-
-//        var pdfBytes = pdf.GeneratePdf();
-//        return File(pdfBytes, "application/pdf", "CandidateScores.pdf");
-//    }
-//    catch (Exception ex)
-//    {
-//        return StatusCode(500, $"Error generating PDF: {ex.Message}");
-//    }
-//}
 
 
 

@@ -12,17 +12,20 @@ namespace AutomatedExamSystem.Controllers
         private readonly IQuestionRepository _qRepo;
         private readonly ICandidateRepository _cRepo;
         private readonly IExamService _examService;
+        private readonly ExamAppDbContext _db;
         private readonly IConfiguration _config;
 
         public ExamController(
             IQuestionRepository qRepo,
             ICandidateRepository cRepo,
             IExamService examService,
+            ExamAppDbContext db,
             IConfiguration config)
         {
             _qRepo = qRepo;
             _cRepo = cRepo;
             _examService = examService;
+            _db = db;
             _config = config;
         }
 
@@ -81,7 +84,6 @@ namespace AutomatedExamSystem.Controllers
             return View("StartAgain", questions);
         }
 
-        // ✅ Handles form submission
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Submit(IFormCollection form)
@@ -124,7 +126,18 @@ namespace AutomatedExamSystem.Controllers
                     return View("Error");
                 }
 
-                // ✅ Success page
+                // ✅ Record submission time in WAT
+                var watZone = TimeZoneInfo.FindSystemTimeZoneById("W. Central Africa Standard Time");
+                var watNow = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, watZone);
+
+                attempt.SubmittedAtWAT = watNow;
+
+                // ✅ Update database with WAT timestamp
+                _db.CandidateAttempts.Update(attempt);
+                await _db.SaveChangesAsync();
+
+                // ✅ Show success page with submission time
+                ViewBag.SubmittedTime = watNow.ToString("ddd, MMM dd yyyy hh:mm tt") + " WAT";
                 return View("SubmitSuccess", attempt);
             }
             catch (Exception ex)

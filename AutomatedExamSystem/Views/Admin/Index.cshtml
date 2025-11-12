@@ -1,47 +1,9 @@
-﻿ @model IEnumerable<AutomatedExamSystem.Models.Question>
-
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h2>Questions</h2>
-    <a class="btn btn-outline-primary" asp-action="DownloadCandidateScores">
-        <i class="bi bi-download"></i> Download Candidate Scores (PDF)
-    </a>
-</div>
-
-<p><a class="btn btn-success" asp-action="Create">Add question</a></p>
-<table class="table table-striped">
-    <thead><tr><th>#</th><th>Section</th><th>Text</th><th></th></tr></thead>
-    <tbody>
-        @foreach (var q in Model)
-        {
-            <tr>
-                <td>@q.Id</td>
-                <td>@q.Section</td>
-                <td>@q.QuestionText</td>
-                <td>
-                    <a class="btn btn-sm btn-primary" asp-action="Edit" asp-route-id="@q.Id">Edit</a>
-                    <form asp-action="Delete" method="post" class="d-inline">
-                        @Html.AntiForgeryToken()
-                        <input type="hidden" name="id" value="@q.Id" />
-                        <button class="btn btn-sm btn-danger">Delete</button>
-                    </form>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
-  
-
-
-
-
-
-
-                    @* @model IEnumerable<AutomatedExamSystem.Models.Question>
+﻿@model IEnumerable<AutomatedExamSystem.Models.Question>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h2>Questions</h2>
 
-    <form asp-action="DownloadCandidateScoresFiltered" method="get" class="d-flex gap-2">
+    <form asp-action="DownloadCandidateScoresFiltered" method="get" class="d-flex gap-2 align-items-center">
         <select name="level" class="form-select">
             <option value="">All Levels</option>
             <option value="100L">100L</option>
@@ -53,8 +15,14 @@
         <input type="date" name="fromDate" class="form-control" />
         <input type="date" name="toDate" class="form-control" />
 
-        <button type="submit" class="btn btn-outline-primary">
-            <i class="bi bi-download"></i> Download Scores (PDF)
+        <!-- ✅ PDF Download Button -->
+        <button type="submit" name="format" value="pdf" class="btn btn-outline-primary">
+            <i class="bi bi-file-earmark-pdf"></i> Download PDF
+        </button>
+
+        <!-- ✅ CSV Download Button -->
+        <button type="submit" name="format" value="csv" class="btn btn-outline-success">
+            <i class="bi bi-filetype-csv"></i> Download CSV
         </button>
     </form>
 </div>
@@ -85,16 +53,18 @@
 }
 
 <p>
-    <a class="btn btn-success" asp-action="Create">Add question</a>
+    <a class="btn btn-success" asp-action="Create">
+        <i class="bi bi-plus-circle"></i> Add Question
+    </a>
 </p>
 
-<table class="table table-striped">
-    <thead>
+<table class="table table-striped table-hover shadow-sm">
+    <thead class="table-light">
         <tr>
             <th>#</th>
             <th>Section</th>
             <th>Text</th>
-            <th></th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -105,15 +75,19 @@
                 <td>@q.Section</td>
                 <td>@q.QuestionText</td>
                 <td>
-                    <a class="btn btn-sm btn-primary" asp-action="Edit" asp-route-id="@q.Id">Edit</a>
+                    <a class="btn btn-sm btn-primary" asp-action="Edit" asp-route-id="@q.Id">
+                        <i class="bi bi-pencil-square"></i> Edit
+                    </a>
+
                     <form asp-action="Delete" method="post" class="d-inline">
                         @Html.AntiForgeryToken()
                         <input type="hidden" name="id" value="@q.Id" />
-                        <button class="btn btn-sm btn-danger">Delete</button>
+                        <button type="submit" class="btn btn-sm btn-danger">
+                            <i class="bi bi-trash"></i> Delete
+                        </button>
                     </form>
                 </td>
             </tr>
         }
     </tbody>
 </table>
- *@

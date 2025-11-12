@@ -1,4 +1,4 @@
-﻿@model AutomatedExamSystem.Models.Question 
+﻿@* @model AutomatedExamSystem.Models.Question 
 
 <h2>Create Question</h2>
 <form asp-action="Create" method="post">
@@ -50,6 +50,7 @@
 
     <button class="btn btn-primary">Save</button>
 </form>
+ *@
 
 
 
@@ -60,10 +61,7 @@
 
 
 
-
-
-
-@* @model AutomatedExamSystem.Models.Question
+ @model AutomatedExamSystem.Models.Question
 
 @{
     ViewData["Title"] = "Create Question";
@@ -158,4 +156,4 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
- *@
+ 
